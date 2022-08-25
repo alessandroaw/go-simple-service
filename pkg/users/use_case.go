@@ -1,5 +1,7 @@
 package users
 
+import "fmt"
+
 // userUseCase is the object that will be used to implement the UserUseCase interface
 type userUseCase struct {
 	userRepo UserRepository
@@ -17,7 +19,7 @@ func NewUserUseCase(userRepo UserRepository) UserUseCase {
 	}
 }
 
-func (u *userUseCase) GetAll() ([]*User, error) {
+func (u *userUseCase) GetAll() ([]User, error) {
 	users, err := u.userRepo.GetAll()
 
 	if err != nil {
@@ -27,10 +29,10 @@ func (u *userUseCase) GetAll() ([]*User, error) {
 	return users, nil
 }
 
-func (u *userUseCase) GetById(id int) (*User, error) {
+func (u *userUseCase) GetById(id int) (User, error) {
 	usr, err := u.userRepo.GetById(id)
 	if err != nil {
-		return nil, err
+		return User{}, err
 	}
 
 	return usr, nil
@@ -48,6 +50,8 @@ func (u *userUseCase) Create(usr *User) (*User, error) {
 func (u *userUseCase) Update(id int, usr *User) (*User, error) {
 	usr, err := u.userRepo.Update(id, usr)
 	if err != nil {
+		fmt.Println("update")
+		fmt.Println(err)
 		return nil, err
 	}
 

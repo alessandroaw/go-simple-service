@@ -1,49 +1,66 @@
 package users
 
+import (
+	"gorm.io/gorm"
+)
+
 type userRepository struct {
-	users map[int]*User
-	seq   int
+	db *gorm.DB
 }
 
-func NewUserRepository() UserRepository {
-	users := map[int]*User{}
-	seq := 1
+func NewUserRepository(db *gorm.DB) UserRepository {
+	db.AutoMigrate(&User{})
+
 	return &userRepository{
-		users: users,
-		seq:   seq,
+		db: db,
 	}
 }
 
-func (u *userRepository) GetAll() ([]*User, error) {
-	users := []*User{}
-	for _, user := range u.users {
-		users = append(users, user)
+func (u *userRepository) GetAll() ([]User, error) {
+	var users []User
+	if err := u.db.Find(&users).Error; err != nil {
+		return nil, err
 	}
 
 	return users, nil
 }
 
-func (u *userRepository) GetById(id int) (*User, error) {
-	users := u.users
-	return users[id], nil
+func (u *userRepository) GetById(id int) (User, error) {
+	var user User
+	if err := u.db.First(&user, id).Error; err != nil {
+		return User{}, err
+	}
+
+	return user, nil
 }
 
 func (u *userRepository) Create(usr *User) (*User, error) {
-	users := u.users
-	usr.ID = u.seq
-	users[usr.ID] = usr
-	u.seq++
+	if err := u.db.Create(usr).Error; err != nil {
+		return nil, err
+	}
+
 	return usr, nil
 }
 
-func (u *userRepository) Update(id int, usr *User) (*User, error) {
-	users := u.users
-	users[id].Name = usr.Name
-	return users[id], nil
+func (u *userRepository) Update(id int, newUsr *User) (*User, error) {
+	var user User
+
+	if err := u.db.First(&user, id).Error; err != nil {
+		return nil, err
+	}
+
+	u.db.Model(&user).Updates(newUsr)
+
+	return &user, nil
+
 }
 
 func (u *userRepository) Delete(id int) error {
-	users := u.users
-	delete(users, id)
+	var user User
+
+	if err := u.db.Delete(&user, id).Error; err != nil {
+		return err
+	}
+
 	return nil
 }

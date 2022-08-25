@@ -48,10 +48,6 @@ func (u *UserHandler) GetById(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 
-	if user == nil {
-		return c.NoContent(http.StatusNotFound)
-	}
-
 	return c.JSON(http.StatusOK, user)
 }
 
@@ -83,7 +79,7 @@ func (u *UserHandler) Update(c echo.Context) error {
 
 	res, err := u.UUseCase.Update(id, usr)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, err)
+		return c.JSON(http.StatusNotFound, err)
 	}
 
 	return c.JSON(http.StatusOK, res)
