@@ -7,7 +7,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/therealsandro/go-simple-service/pkg/users"
+	user "github.com/therealsandro/go-simple-service/pkg/users"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -38,9 +38,11 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	userRepo := users.NewUserRepository(db)
-	uuc := users.NewUserUseCase(userRepo)
-	users.NewUserHandler(e, uuc)
+	userRepo := user.NewUserRepository(db)
+	uuc := user.NewUserUseCase(userRepo)
+
+	v1 := e.Group("/v1")
+	user.NewUserHandler(v1, uuc)
 
 	// Start Server
 	e.Logger.Fatal(e.Start(":4000"))

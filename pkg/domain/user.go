@@ -1,4 +1,4 @@
-package users
+package domain
 
 import "gorm.io/gorm"
 

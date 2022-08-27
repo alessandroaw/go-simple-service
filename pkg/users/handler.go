@@ -1,19 +1,20 @@
-package users
+package user
 
 import (
 	"net/http"
 	"strconv"
 
 	"github.com/labstack/echo/v4"
+	"github.com/therealsandro/go-simple-service/pkg/domain"
 )
 
 // Use Case
 type UserHandler struct {
-	UUseCase UserUseCase
+	UUseCase domain.UserUseCase
 }
 
 // NewArticleHandler will initialize the user resources endpoint
-func NewUserHandler(e *echo.Echo, uuc UserUseCase) *UserHandler {
+func NewUserHandler(e *echo.Group, uuc domain.UserUseCase) *UserHandler {
 	handler := &UserHandler{
 		UUseCase: uuc,
 	}
@@ -52,7 +53,7 @@ func (u *UserHandler) GetById(c echo.Context) error {
 }
 
 func (u *UserHandler) Create(c echo.Context) error {
-	usr := &User{}
+	usr := &domain.User{}
 
 	if err := c.Bind(usr); err != nil {
 		return c.JSON(http.StatusBadRequest, err)
@@ -68,7 +69,7 @@ func (u *UserHandler) Create(c echo.Context) error {
 }
 
 func (u *UserHandler) Update(c echo.Context) error {
-	usr := &User{}
+	usr := &domain.User{}
 	if err := c.Bind(usr); err != nil {
 		return c.JSON(http.StatusBadRequest, err)
 	}
